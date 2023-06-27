@@ -1,14 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 import { fetchLikedFormSubmissions, onMessage, saveLikedFormSubmission } from './service/mockServer';
 
@@ -19,7 +21,7 @@ export default function Content() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  
+  // Get Data from LocalStorage
   const getLikedData = () => {
     setLoading(true);
     fetchLikedFormSubmissions()
@@ -30,11 +32,12 @@ export default function Content() {
       })
       .catch((error) => {
         console.error(error); // Handle error
-        setError(error.message);
+        setError("An error occurred on the server. Please refresh your browser.");
         setLoading(false);
       });
   }
 
+  //Handle Like Button on Snackbar
   const handleLike = () => {
     saveLikedFormSubmission(newDataObj)
     .then((response) => {
@@ -44,7 +47,7 @@ export default function Content() {
     })
     .catch((error) => {
       console.error(error); // Handle error
-      setError(error.message);
+      setError("An error occurred on the server. Please refresh your browser.");
     });
   }
 
@@ -58,7 +61,6 @@ export default function Content() {
     setNewDataObj(formData.data)
   };
 
-
   useEffect(() => {
     getLikedData()
   },[])
@@ -69,9 +71,10 @@ export default function Content() {
   },[])
 
   // SnackBar Action for LIKE
+  // Refactor Snackbar into it's own Component if you have time
   const action = (
     <>
-      <Button color="primary" size="small" onClick={handleLike}>
+      <Button style={{ color: 'cyan' }} size="small" onClick={handleLike}>
         LIKE
       </Button>
       <IconButton
@@ -84,13 +87,16 @@ export default function Content() {
       </IconButton>
     </>
   );
-  
+
+
+  // Refactor Table into it's own component
   return (
     <Box sx={{marginTop: 3}}>
       <Typography variant="h4">Liked Form Submissions</Typography>
-      <Typography variant="body1" sx={{fontStyle: 'italic', marginTop: 1}}>
-        TODO: List of liked submissions here (delete this line)
-      </Typography>
+      {!loading && likedData.length === 0 ? 
+      <Typography variant="body1" sx={{fontWeight: 'bold', marginTop: 1}}>
+        No Liked form submissions (Click on New Submission)
+      </Typography> : ""}
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
           <CircularProgress />
@@ -100,17 +106,30 @@ export default function Content() {
         Error: {error}
       </Typography>
       ) : (
-        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {likedData && likedData.map((value, idx) => (
-          <ListItem
-            key={idx}
-            disableGutters
-          >
-            <ListItemText primary={`${value.firstName} ${value.lastName}`}/>
-            <ListItemText primary={value.email} />
-          </ListItem>
-          ))}
-        </List>
+        <Table sx={{ width: '100%' }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    Fullname
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    Email
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {likedData.map((value, idx) => (
+                <TableRow key={idx}>
+                  <TableCell>{`${value.firstName} ${value.lastName}`}</TableCell>
+                  <TableCell>{value.email}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
       )}
     <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
