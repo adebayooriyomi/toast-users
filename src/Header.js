@@ -20,7 +20,6 @@ export default function Header() {
 
   const handleFormSubmission = (formData) => {
     // Handle the form data received from the server
-    console.log(formData);
     setOpen(true);
     setNewDataObj(formData.data)
   };
@@ -35,7 +34,14 @@ export default function Header() {
 
     const handleLike = () => {
       saveLikedFormSubmission(newDataObj)
-      setOpen(false);
+      .then((response) => {
+        console.log(response); 
+        setOpen(false);
+      })
+      .catch((error) => {
+        console.error(error); // Handle error
+      });
+      
     }
 
     const action = (

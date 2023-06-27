@@ -10,10 +10,15 @@ import { fetchLikedFormSubmissions } from './service/mockServer';
 export default function Content() {
   const [likedData, setLikedData] = useState([])
 
-  const getLikedData = async () => {
-    const data = await fetchLikedFormSubmissions()
-    setLikedData(data.formSubmissions)
-    console.log(data.formSubmissions)
+  const getLikedData = () => {
+    fetchLikedFormSubmissions()
+      .then((response) => {
+        const submissions = response.formSubmissions;
+        setLikedData(submissions);
+      })
+      .catch((error) => {
+        console.error(error); // Handle error if needed
+      });
   }
 
   useEffect(() => {
@@ -23,7 +28,6 @@ export default function Content() {
   return (
     <Box sx={{marginTop: 3}}>
       <Typography variant="h4">Liked Form Submissions</Typography>
-
       <Typography variant="body1" sx={{fontStyle: 'italic', marginTop: 1}}>
         TODO: List of liked submissions here (delete this line)
       </Typography>
