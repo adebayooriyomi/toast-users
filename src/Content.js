@@ -60,13 +60,10 @@ export default function Content() {
     setOpen(true);
     setNewDataObj(formData.data)
   };
-
-  useEffect(() => {
-    getLikedData()
-  },[])
   
   //Listen to formSubmission and handleit
   useEffect(()=> {
+    getLikedData()
     onMessage(handleFormSubmission);
   },[])
 
